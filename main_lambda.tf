@@ -10,6 +10,7 @@ resource "aws_lambda_function" "letsencrypt-lambda" {
   handler          = "letsencrypt-lambda"
   source_code_hash = filebase64sha256(data.external.letsencrypt-lambda.result["filename"])
   runtime          = "go1.x"
+  timeout          = 900
   publish          = var.aws_lambda_function_publish
 
   environment {

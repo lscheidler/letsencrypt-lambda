@@ -32,6 +32,26 @@ data "aws_iam_policy_document" "letsencrypt-lambda_policy" {
     ]
   }
 
+  statement {
+    effect = "Allow"
+    actions = [
+      "route53:ChangeResourceRecordSets",
+    ]
+    resources = [
+      "arn:aws:route53:::hostedzone/${var.aws_hosted_zone_id}",
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "route53:GetChange",
+    ]
+    resources = [
+      "*",
+    ]
+  }
+
   dynamic "statement" {
     for_each = var.use_aws_secrets_manager ? [1] : []
 
