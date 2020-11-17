@@ -34,7 +34,7 @@ func (ac *AccountCrypt) UnmarshalJSON(b []byte) error {
 	var plaintext []byte
 	var err error
 
-	clientPassphrase := getClientPassphrase()
+	clientPassphrase := ac.getClientPassphrase()
 
 	if err = json.Unmarshal(b, &jsonData); err != nil {
 		return err
@@ -62,7 +62,7 @@ func (ac *AccountCrypt) UnmarshalJSON(b []byte) error {
 func (ac *AccountCrypt) MarshalJSON() ([]byte, error) {
 	var ciphertext []byte
 
-	clientPassphrase := getClientPassphrase()
+	clientPassphrase := ac.getClientPassphrase()
 
 	a := Account(*ac)
 	plaintext, err := json.Marshal(&a)
@@ -87,8 +87,10 @@ func pickChallenge(typ string, chal []*acme.Challenge) *acme.Challenge {
 	return nil
 }
 
-func getClientPassphrase() *string {
-	if clientPassphrase := helper.Getenv("CLIENT_PASSPHRASE"); clientPassphrase == nil {
+func (ac *AccountCrypt) getClientPassphrase() *string {
+	if ac.ClientPassphrase != nil {
+		return ac.ClientPassphrase
+	} else if clientPassphrase := helper.Getenv("CLIENT_PASSPHRASE"); clientPassphrase == nil {
 		if clientPassphraseSecretsArn := helper.Getenv("CLIENT_PASSPHRASE_SECRET_ARN"); clientPassphraseSecretsArn == nil {
 			log.Fatal("Environment variable CLIENT_PASSPHRASE and CLIENT_PASSPHRASE_SECRET_ARN not found. One of these environment variables must be set.")
 			return nil
